@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CaptureScrawl/ShowImageViewController.m"
-            timestampString = "502787589.546648"
+            timestampString = "502794762.560911"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "340"
-            endingLineNumber = "340"
+            startingLineNumber = "364"
+            endingLineNumber = "364"
             landmarkName = "-drawRawView"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CaptureScrawl/ShowImageViewController.m"
-            timestampString = "502789689.671027"
+            timestampString = "502794762.560911"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "462"
-            endingLineNumber = "462"
+            startingLineNumber = "486"
+            endingLineNumber = "486"
             landmarkName = "-drawLineWay:rectType:color:fromPoint:toPoint:"
             landmarkType = "7">
          </BreakpointContent>

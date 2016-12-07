@@ -89,7 +89,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     [self.view addSubview:cancelBtn];
     
     //形状
-    UIButton *upBtn = [[UIButton alloc]initWithFrame:CGRectMake(5, 25, 100, 35)];
+    UIButton *upBtn = [[UIButton alloc]initWithFrame:CGRectMake(5, 25, (self.view.frame.size.width-5*5)/4, 35)];
     [upBtn setBackgroundColor:[UIColor grayColor]];
     [upBtn setTitle:@"直线" forState:UIControlStateNormal];
     [upBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -98,18 +98,9 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     [upBtn addTarget:self action:@selector(shap:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:upBtn];
     
-    //颜色
-    UIButton *downBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 105, 25, 100, 35)];
-    [downBtn setBackgroundColor:[UIColor grayColor]];
-    [downBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [downBtn setTitle:[self.colors allKeys][0] forState:UIControlStateNormal];
-    downBtn.layer.cornerRadius = 5;
-    downBtn.alpha = 0.8;
-    [downBtn addTarget:self action:@selector(colorChange:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:downBtn];
     
     //撤销
-    UIButton *rollbackBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(upBtn.frame)+5, CGRectGetMinY(upBtn.frame), self.view.frame.size.width - (upBtn.frame.size.width + downBtn.frame.size.width + 4 * 5), 35)];
+    UIButton *rollbackBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(upBtn.frame)+5, CGRectGetMinY(upBtn.frame), (self.view.frame.size.width-5*5)/4, 35)];
     [rollbackBtn setBackgroundColor:[UIColor grayColor]];
     [rollbackBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [rollbackBtn setTitle:@"撤销" forState:UIControlStateNormal];
@@ -117,6 +108,26 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     rollbackBtn.alpha = 0.8;
     [rollbackBtn addTarget:self action:@selector(rollback) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:rollbackBtn];
+    
+    // 重置
+    UIButton *resetBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(rollbackBtn.frame)+5, CGRectGetMinY(upBtn.frame), (self.view.frame.size.width-5*5)/4, 35)];
+    [resetBtn setBackgroundColor:[UIColor grayColor]];
+    [resetBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [resetBtn setTitle:@"重置" forState:UIControlStateNormal];
+    resetBtn.layer.cornerRadius = 5;
+    resetBtn.alpha = 0.8;
+    [resetBtn addTarget:self action:@selector(reset) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:resetBtn];
+    
+    //颜色
+    UIButton *downBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(resetBtn.frame)+5, CGRectGetMinY(upBtn.frame), (self.view.frame.size.width-5*5)/4, 35)];
+    [downBtn setBackgroundColor:[UIColor grayColor]];
+    [downBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [downBtn setTitle:[self.colors allKeys][0] forState:UIControlStateNormal];
+    downBtn.layer.cornerRadius = 5;
+    downBtn.alpha = 0.8;
+    [downBtn addTarget:self action:@selector(colorChange:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:downBtn];
 
     
     self.oneTimeView = [[UIImageView alloc] init];
@@ -187,6 +198,19 @@ static NSUInteger viewTagValue = DrawViewTagStart;
         UIImageView *imageView = [self.drawView viewWithTag:viewTagValue-- - 1];
         [imageView removeFromSuperview];
         [self.paths removeObjectAtIndex:self.paths.count - 1];
+    }
+}
+
+#pragma mark - 重置
+- (void)reset
+{
+    if (viewTagValue > DrawViewTagStart) {
+        for (NSInteger i=viewTagValue; i>=DrawViewTagStart; i--) {
+            UIImageView *imageView = [self.drawView viewWithTag:i - 1];
+            [imageView removeFromSuperview];
+        }
+        
+        [self.paths removeAllObjects];
     }
 }
 

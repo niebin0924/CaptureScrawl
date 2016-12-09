@@ -52,7 +52,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     self.selectedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 65,  width, height-65)];
     self.selectedImage.image = self.image;
     self.selectedImage.center = self.view.center;
-    [self.view addSubview:self.selectedImage];
+//    [self.view addSubview:self.selectedImage];
     
     //遮罩层
     self.drawView = [[UIImageView alloc] initWithFrame:self.selectedImage.frame];
@@ -64,7 +64,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     [self.view addSubview:self.drawView];
     
     //直线、蓝色
-    self.rectType = DrawRectTypeLine;
+    self.rectType = DrawRectTypeRadio;
     self.color = self.colors[[self.colors allKeys][0]];
     
     //UIButton
@@ -91,7 +91,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     //形状
     UIButton *upBtn = [[UIButton alloc]initWithFrame:CGRectMake(5, 25, (self.view.frame.size.width-5*5)/4, 35)];
     [upBtn setBackgroundColor:[UIColor grayColor]];
-    [upBtn setTitle:@"直线" forState:UIControlStateNormal];
+    [upBtn setTitle:@"椭圆" forState:UIControlStateNormal];
     [upBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     upBtn.layer.cornerRadius = 5;
     upBtn.alpha = 0.8;
@@ -168,6 +168,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
 #pragma mark - 保存图片到相册
 -(void)saveBtn
 {
+    /*
     //1 保存照片到沙盒目录
     NSData *imageData = UIImagePNGRepresentation(_image);
     
@@ -179,7 +180,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     NSString *pictureName= [NSString stringWithFormat:@"%ld.png",(long)seconds];
     NSString *savedImagePath = [documentsDirectory stringByAppendingPathComponent:pictureName];
     [imageData writeToFile:savedImagePath atomically:YES];
-    
+    */
     //2 保存图片到照片库
     UIImageWriteToSavedPhotosAlbum(_image, nil, nil, nil);
     
@@ -217,16 +218,15 @@ static NSUInteger viewTagValue = DrawViewTagStart;
 #pragma mark - 形状
 - (void)shap:(UIButton *)btn {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择图形" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    UIAlertAction *lineAction = [UIAlertAction actionWithTitle:@"直线" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-        self.rectType = DrawRectTypeLine;
-        [btn setTitle:@"直线" forState:UIControlStateNormal];
-    }];
-    
-    
+
     UIAlertAction *camaraAction = [UIAlertAction actionWithTitle:@"椭圆" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
         self.rectType = DrawRectTypeRadio;
         [btn setTitle:@"椭圆" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *lineAction = [UIAlertAction actionWithTitle:@"直线（暂未实现）" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        self.rectType = DrawRectTypeLine;
+        [btn setTitle:@"直线" forState:UIControlStateNormal];
     }];
     
     UIAlertAction *libraryAction = [UIAlertAction actionWithTitle:@"矩形" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
@@ -244,8 +244,9 @@ static NSUInteger viewTagValue = DrawViewTagStart;
         [alert dismissViewControllerAnimated:YES completion:nil];
     }];
     
-    [alert addAction:lineAction];
+    
     [alert addAction:camaraAction];
+    [alert addAction:lineAction];
     [alert addAction:libraryAction];
     [alert addAction:textAction];
     [alert addAction:cancelAction];
@@ -296,10 +297,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
         UIImageView *imageView = (UIImageView *)touch.view;
         if (imageView == self.drawView) {
             self.movePoint = [touch locationInView:imageView];
-            if (!CGPointEqualToPoint(self.previousPoint, CGPointZero))
-            {
-                
-            }
+            
             self.previousPoint = [touch previousLocationInView:imageView];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -308,7 +306,8 @@ static NSUInteger viewTagValue = DrawViewTagStart;
                     if (self.rectType == DrawRectTypeLine) {
                         [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.movePoint];
                     }else{
-                        [self drawNewWay:DrawViewTypeDrawImage rectType:_rectType color:_color];
+//                        [self drawNewWay:DrawViewTypeDrawImage rectType:_rectType color:_color];
+                        [self drawRawView];
                     }
                 });
                 
@@ -337,7 +336,8 @@ static NSUInteger viewTagValue = DrawViewTagStart;
                     if (self.rectType == DrawRectTypeLine) {
                         [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.endPoint];
                     }else{
-                        [self drawNewWay:DrawViewTypeMiddleImage rectType:_rectType color:_color];
+//                        [self drawNewWay:DrawViewTypeMiddleImage rectType:_rectType color:_color];
+                        [self drawRawView];
                     }
                 });
                 
@@ -437,7 +437,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     }
 }
 
-#pragma mark - 绘制直线
+#pragma mark - 绘制直线、手写
 - (void)drawLineWay:(DrawViewType)viewType rectType:(DrawRectType)rectType color:(UIColor *)color fromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint
 {
     CGPoint finishedPoint;
@@ -479,8 +479,9 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     bitmapBytesPerRow = (imageWidth * 4);
     bitmapByteCount = (bitmapBytesPerRow * imageHeight);
     CFMutableDataRef pixels = CFDataCreateMutable(NULL, imageWidth * imageHeight);
-    CGContextRef context = CGBitmapContextCreate(CFDataGetMutableBytePtr(pixels), imageWidth, imageHeight , 8, imageWidth, colorspace, kCGImageAlphaNone);
-//    CGContextRef context = UIGraphicsGetCurrentContext();
+//    CGContextRef context = CGBitmapContextCreate(CFDataGetMutableBytePtr(pixels), imageWidth, imageHeight , 8, imageWidth, colorspace, kCGImageAlphaNone);
+//    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
     
     //绘图上下文获取失败则跳转
     if (context == 0x0) {

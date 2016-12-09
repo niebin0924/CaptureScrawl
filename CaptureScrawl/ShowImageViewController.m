@@ -306,8 +306,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
                     if (self.rectType == DrawRectTypeLine) {
                         [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.movePoint];
                     }else{
-//                        [self drawNewWay:DrawViewTypeDrawImage rectType:_rectType color:_color];
-                        [self drawRawView];
+                        [self drawNewWay:DrawViewTypeDrawImage rectType:_rectType color:_color];
                     }
                 });
                 
@@ -336,8 +335,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
                     if (self.rectType == DrawRectTypeLine) {
                         [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.endPoint];
                     }else{
-//                        [self drawNewWay:DrawViewTypeMiddleImage rectType:_rectType color:_color];
-                        [self drawRawView];
+                        [self drawNewWay:DrawViewTypeMiddleImage rectType:_rectType color:_color];
                     }
                 });
                 
@@ -480,8 +478,11 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     bitmapByteCount = (bitmapBytesPerRow * imageHeight);
     CFMutableDataRef pixels = CFDataCreateMutable(NULL, imageWidth * imageHeight);
 //    CGContextRef context = CGBitmapContextCreate(CFDataGetMutableBytePtr(pixels), imageWidth, imageHeight , 8, imageWidth, colorspace, kCGImageAlphaNone);
-//    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
+    UIGraphicsBeginImageContextWithOptions(self.image.size, NO, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    //将图片根据原始大小绘制到上下文
+    [self.drawView.image drawInRect:CGRectMake(0, 0, self.drawView.image.size.width, self.drawView.image.size.height)];
     
     //绘图上下文获取失败则跳转
     if (context == 0x0) {

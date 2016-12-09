@@ -10,7 +10,7 @@
 #import "Cutter.h"
 #import "ShowImageViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <UIGestureRecognizerDelegate>
 
 @property (nonatomic,strong) UIWebView *webView;
 
@@ -49,6 +49,26 @@
     [self.view addSubview:self.webView];
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://www.baidu.com"]];
     [self.webView loadRequest:request];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleGes)];
+    [tap setNumberOfTapsRequired:2];
+    tap.delegate = self;
+    [self.webView.scrollView addGestureRecognizer:tap];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    if (touch.tapCount == 2) {
+       
+        ShowImageViewController *vc = [[ShowImageViewController alloc] init];
+        vc.image = [self.webView viewCutter];
+        vc.navigationController.navigationBarHidden = YES;
+        vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        vc.modalPresentationStyle = UIModalPresentationCustom;
+        [self presentViewController:vc animated:YES completion:nil];
+    }
+    return YES; // Return NO to prevent html document from receiving the touch event.
 }
 
 #pragma mark - 导航按钮
@@ -62,6 +82,15 @@
     [self presentViewController:vc animated:YES completion:nil];
 }
 
+- (void)doubleGes
+{
+    ShowImageViewController *vc = [[ShowImageViewController alloc] init];
+    vc.image = [self.webView viewCutter];
+    vc.navigationController.navigationBarHidden = YES;
+    vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    vc.modalPresentationStyle = UIModalPresentationCustom;
+    [self presentViewController:vc animated:YES completion:nil];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

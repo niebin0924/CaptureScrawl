@@ -15,6 +15,7 @@
 		4F3B2F241DF6AC7A003A215F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3B2F221DF6AC7A003A215F /* LaunchScreen.storyboard */; };
 		4F3B2F2F1DF6AC7A003A215F /* CaptureScrawlTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3B2F2E1DF6AC7A003A215F /* CaptureScrawlTests.m */; };
 		4F3B2F3A1DF6AC7A003A215F /* CaptureScrawlUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3B2F391DF6AC7A003A215F /* CaptureScrawlUITests.m */; };
+		4F3C2C711DFA4DE000FCE593 /* DrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3C2C701DFA4DE000FCE593 /* DrawView.m */; };
 		4FE5F79D1DF797E900BAF628 /* UIScrollView+Cutter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FE5F79A1DF797E900BAF628 /* UIScrollView+Cutter.m */; };
 		4FE5F79E1DF797E900BAF628 /* UIView+Cutter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FE5F79C1DF797E900BAF628 /* UIView+Cutter.m */; };
 		4FE5F7A11DF797F800BAF628 /* ShowImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FE5F7A01DF797F800BAF628 /* ShowImageViewController.m */; };
@@ -54,6 +55,8 @@
 		4F3B2F351DF6AC7A003A215F /* CaptureScrawlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CaptureScrawlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F3B2F391DF6AC7A003A215F /* CaptureScrawlUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CaptureScrawlUITests.m; sourceTree = "<group>"; };
 		4F3B2F3B1DF6AC7A003A215F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F3C2C6F1DFA4DE000FCE593 /* DrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawView.h; sourceTree = "<group>"; };
+		4F3C2C701DFA4DE000FCE593 /* DrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawView.m; sourceTree = "<group>"; };
 		4FE5F7981DF797E900BAF628 /* Cutter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cutter.h; sourceTree = "<group>"; };
 		4FE5F7991DF797E900BAF628 /* UIScrollView+Cutter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+Cutter.h"; sourceTree = "<group>"; };
 		4FE5F79A1DF797E900BAF628 /* UIScrollView+Cutter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+Cutter.m"; sourceTree = "<group>"; };
@@ -116,6 +119,8 @@
 				4F3B2F181DF6AC7A003A215F /* AppDelegate.m */,
 				4F3B2F1A1DF6AC7A003A215F /* ViewController.h */,
 				4F3B2F1B1DF6AC7A003A215F /* ViewController.m */,
+				4F3C2C6F1DFA4DE000FCE593 /* DrawView.h */,
+				4F3C2C701DFA4DE000FCE593 /* DrawView.m */,
 				4FE5F79F1DF797F800BAF628 /* ShowImageViewController.h */,
 				4FE5F7A01DF797F800BAF628 /* ShowImageViewController.m */,
 				4F3B2F1D1DF6AC7A003A215F /* Main.storyboard */,
@@ -305,6 +310,7 @@
 				4F3B2F191DF6AC7A003A215F /* AppDelegate.m in Sources */,
 				4FE5F79E1DF797E900BAF628 /* UIView+Cutter.m in Sources */,
 				4FE5F79D1DF797E900BAF628 /* UIScrollView+Cutter.m in Sources */,
+				4F3C2C711DFA4DE000FCE593 /* DrawView.m in Sources */,
 				4F3B2F161DF6AC7A003A215F /* main.m in Sources */,
 				4FE5F7A11DF797F800BAF628 /* ShowImageViewController.m in Sources */,
 			);

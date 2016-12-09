@@ -7,6 +7,7 @@
 //
 
 #import "ShowImageViewController.h"
+#import "DrawView.h"
 
 static NSUInteger viewTagValue = DrawViewTagStart;
 
@@ -19,11 +20,12 @@ static NSUInteger viewTagValue = DrawViewTagStart;
 @property (nonatomic, assign) CGPoint startPoint;
 @property (nonatomic, assign) CGPoint endPoint;
 @property (nonatomic, assign) CGPoint movePoint;
-@property (nonatomic, strong) UIImageView *drawView;
+@property (nonatomic, strong) DrawView *drawView;
 @property (nonatomic, assign) DrawRectType rectType;
 @property (nonatomic, assign) UIColor *color;
 @property (nonatomic, strong) NSDictionary *colors;
 @property (nonatomic, strong) NSMutableArray *paths;
+@property (nonatomic, strong) NSMutableArray *points;
 @property (nonatomic, strong) NSString *text;
 @property (nonatomic, strong) UIImageView *oneTimeView;
 
@@ -37,6 +39,7 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     self.view.backgroundColor = [UIColor whiteColor];
     self.colors = @{@"红色":[UIColor redColor],@"黄色":[UIColor yellowColor],@"蓝色":[UIColor blueColor],@"绿色":[UIColor greenColor],@"青色":[UIColor grayColor],@"紫色":[UIColor purpleColor],@"橙色":[UIColor orangeColor],@"黑色":[UIColor blackColor],@"白色":[UIColor whiteColor]};
     self.paths = [[NSMutableArray alloc] init];
+    self.points = [[NSMutableArray alloc] init];
     self.text = @"";
     
     [self initView];
@@ -49,17 +52,19 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     CGFloat width = self.image.size.width > self.view.frame.size.width ? self.view.frame.size.width : self.image.size.width;
     CGFloat height = self.image.size.height * width / self.image.size.width;
     
-    self.selectedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 65,  width, height-65)];
-    self.selectedImage.image = self.image;
-    self.selectedImage.center = self.view.center;
+//    self.selectedImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 65,  width, height-65)];
+//    self.selectedImage.image = self.image;
+//    self.selectedImage.center = self.view.center;
 //    [self.view addSubview:self.selectedImage];
     
     //遮罩层
-    self.drawView = [[UIImageView alloc] initWithFrame:self.selectedImage.frame];
+    self.drawView = [[DrawView alloc] initWithFrame:CGRectMake(10, 65,  width-20, height-65)];
     self.drawView.backgroundColor = [UIColor grayColor];
     self.drawView.image = _image;
     self.drawView.layer.masksToBounds = YES;
     self.drawView.layer.cornerRadius = 8;
+    self.drawView.layer.borderWidth = 1;
+    self.drawView.layer.borderColor = [[UIColor grayColor] CGColor];
     self.drawView.userInteractionEnabled = YES;
     [self.view addSubview:self.drawView];
     
@@ -286,6 +291,8 @@ static NSUInteger viewTagValue = DrawViewTagStart;
         if (imageView == self.drawView) {
             self.startPoint = [touch locationInView:imageView];
         }
+        
+        [self.points addObject:[NSValue valueWithCGPoint:self.startPoint]];
     }
     
 }
@@ -300,11 +307,14 @@ static NSUInteger viewTagValue = DrawViewTagStart;
             
             self.previousPoint = [touch previousLocationInView:imageView];
             
+            [self.points addObject:[NSValue valueWithCGPoint:self.movePoint]];
+            
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     if (self.rectType == DrawRectTypeLine) {
-                        [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.movePoint];
+//                        [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.movePoint];
+                        
                     }else{
                         [self drawNewWay:DrawViewTypeDrawImage rectType:_rectType color:_color];
                     }
@@ -328,12 +338,14 @@ static NSUInteger viewTagValue = DrawViewTagStart;
                 self.previousPoint = [touch previousLocationInView:imageView];
                 
             }
+            [self.points addObject:[NSValue valueWithCGPoint:self.endPoint]];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     if (self.rectType == DrawRectTypeLine) {
-                        [self drawLineWay:DrawViewTypeDrawImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.endPoint];
+//                        [self drawLineWay:DrawViewTypeMiddleImage rectType:_rectType color:_color fromPoint:self.previousPoint toPoint:self.endPoint];
+                        [self.drawView drawLine:self.points color:_color];
                     }else{
                         [self drawNewWay:DrawViewTypeMiddleImage rectType:_rectType color:_color];
                     }
@@ -478,11 +490,8 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     bitmapByteCount = (bitmapBytesPerRow * imageHeight);
     CFMutableDataRef pixels = CFDataCreateMutable(NULL, imageWidth * imageHeight);
 //    CGContextRef context = CGBitmapContextCreate(CFDataGetMutableBytePtr(pixels), imageWidth, imageHeight , 8, imageWidth, colorspace, kCGImageAlphaNone);
-    UIGraphicsBeginImageContextWithOptions(self.image.size, NO, 0.0);
+//    UIGraphicsBeginImageContextWithOptions(CGRectZero.size, NO, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    //将图片根据原始大小绘制到上下文
-    [self.drawView.image drawInRect:CGRectMake(0, 0, self.drawView.image.size.width, self.drawView.image.size.height)];
     
     //绘图上下文获取失败则跳转
     if (context == 0x0) {
@@ -496,8 +505,12 @@ static NSUInteger viewTagValue = DrawViewTagStart;
     //开始绘制
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, startPoint.x, self.drawView.frame.size.height-startPoint.y);
+    CGContextAddQuadCurveToPoint(context, startPoint.x, startPoint.y, (startPoint.x+endPoint.x)/2, (startPoint.y+endPoint.y)/2);
     CGContextAddLineToPoint(context, endPoint.x, self.drawView.frame.size.height - endPoint.y);
     CGContextStrokePath(context);
+    
+    //渲染
+    CGContextDrawPath(context, kCGPathStroke);
     
     tmpView.image = UIGraphicsGetImageFromCurrentImageContext();
     
